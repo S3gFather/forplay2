@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>熱門板塊股票追蹤器 Pro</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; }
+
+#setup { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+.setup-card { background: #fff; border-radius: 16px; border: 1px solid #e0e0d8; padding: 2rem 2.5rem; max-width: 500px; width: 100%; }
+.setup-card h1 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.desc { font-size: 13px; color: #666; margin-bottom: 1rem; line-height: 1.6; }
+.free-badge { display: inline-block; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 99px; font-size: 11px; padding: 2px 10px; margin-bottom: 1rem; font-weight: 500; }
+.steps { background: #f9f9f6; border-radius: 10px; padding: 14px 16px; margin-bottom: 1.5rem; }
+.steps h3 { font-size: 11px; font-weight: 600; color: #aaa; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase; }
+.step { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; color: #444; align-items: flex-start; line-height: 1.5; }
+.step:last-child { margin-bottom: 0; }
+.num { background: #f97316; color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; margin-top: 1px; }
+a { color: #f97316; }
+label { font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px; }
+input[type="password"], select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 6px; background: #fafafa; color: #1a1a1a; }
+input:focus, select:focus { outline: none; border-color: #f97316; background: #fff; }
+.hint { font-size: 11px; color: #bbb; margin-bottom: 14px; }
+.btn-primary { width: 100%; padding: 11px; background: #f97316; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; }
+.btn-primary:hover { background: #ea6c0a; }
+
+#app { display: none; max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+.top-bar { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+.app-title { font-size: 20px; font-weight: 600; }
+.app-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+.controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.btn { padding: 7px 14px; border-radius: 8px; border: 1px solid #ddd; background: #fff; font-size: 13px; cursor: pointer; color: #333; white-space: nowrap; }
+.btn:hover { background: #f0f0eb; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-orange { background: #f97316; color: #fff; border-color: #f97316; }
+.btn-orange:hover { background: #ea6c0a; }
+.btn-red { border-color: #f7c1c1; color: #a32d2d; }
+.btn-red:hover { background: #fcebeb; }
+
+.toggle-row { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #666; }
+.toggle { position: relative; width: 34px; height: 19px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 19px; transition: .25s; }
+.slider:before { content: ""; position: absolute; width: 13px; height: 13px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: .25s; }
+input:checked + .slider { background: #f97316; }
+input:checked + .slider:before { transform: translateX(15px); }
+
+.status-bar { font-size: 11px; color: #aaa; margin: 6px 0 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #ddd; flex-shrink: 0; }
+.dot.live { background: #3b6d11; animation: pulse 2s infinite; }
+.dot.err { background: #e24b4a; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+
+/* Category tabs */
+.cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e8e8e0; }
+.ctab { font-size: 11px; padding: 4px 11px; border-radius: 99px; border: 1px solid #e0e0d8; background: #fff; color: #666; cursor: pointer; white-space: nowrap; }
+.ctab:hover { background: #f5f5f0; }
+.ctab.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+/* Heat filter */
+.filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.fbtn { font-size: 11px; padding: 4px 12px; border-radius: 99px; border: 1px solid #ddd; background: #fff; color: #888; cursor: pointer; }
+.fbtn.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+.search-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.search-row input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; background: #fff; color: #1a1a1a; }
+.search-row input:focus { outline: none; border-color: #f97316; }
+.result-count { font-size: 12px; color: #aaa; padding: 8px 0; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 9px; }
+.card { background: #fff; border: 1px solid #e8e8e0; border-radius: 11px; padding: 11px 13px; }
+.card.hot { border-left: 3px solid #e24b4a; }
+.card.warm { border-left: 3px solid #ef9f27; }
+.card.normal { border-left: 3px solid #d0d0c8; }
+.card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.card-name { font-size: 13px; font-weight: 500; line-height: 1.3; }
+.card-cat { font-size: 10px; color: #bbb; margin-top: 2px; }
+.badge { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 500; flex-shrink: 0; margin-left: 5px; }
+.badge.hot { background: #fcebeb; color: #a32d2d; }
+.badge.warm { background: #faeeda; color: #854f0b; }
+.badge.normal { background: #f1efe8; color: #5f5e5a; }
+.reason { font-size: 11px; color: #888; margin-bottom: 7px; line-height: 1.4; }
+.stocks { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-size: 10px; padding: 2px 7px; border-radius: 5px; background: #f5f5f0; border: 1px solid #e8e8e0; font-family: 'SF Mono','Fira Code',monospace; color: #333; }
+
+.empty { text-align: center; padding: 3rem 1rem; color: #aaa; font-size: 14px; }
+.spin { display: inline-block; width: 16px; height: 16px; border: 2px solid #ddd; border-top-color: #f97316; border-radius: 50%; animation: rot .7s linear infinite; margin-right: 8px; vertical-align: middle; }
+@keyframes rot { to{transform:rotate(360deg)} }
+.error { background: #fcebeb; border: 1px solid #f7c1c1; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #a32d2d; margin-bottom: 12px; line-height: 1.5; }
+.progress { font-size: 12px; color: #888; text-align: center; padding: 1rem 0; }
+
+.hist { background: #fff; border: 1px solid #e8e8e0; border-radius: 12px; padding: 12px 16px; margin-top: 14px; }
+.hist h3 { font-size: 12px; color: #aaa; margin-bottom: 8px; }
+.hitem { font-size: 12px; color: #bbb; padding: 4px 0; border-bottom: 1px solid #f5f5f0; display: flex; justify-content: space-between; }
+.hitem:last-child { border-bottom: none; }
+
+@media(max-width:600px){ #app{padding:1rem} .grid{grid-template-columns:1fr} .setup-card{padding:1.5rem} }
+</style>
+</head>
+<body>
+
+<div id="setup">
+  <div class="setup-card">
+    <h1>📊 熱門板塊股票追蹤器 Pro</h1>
+    <div><span class="free-badge">✓ 完全免費 · 100個細分板塊</span></div>
+    <p class="desc" style="margin-top:10px">使用 Groq 免費 API，每天 14,400 次請求，涵蓋科技到傳統共 100 個細分板塊。</p>
+    <div class="steps">
+      <h3>取得免費 Groq API Key（2 分鐘）</h3>
+      <div class="step"><span class="num">1</span><span>前往 <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></span></div>
+      <div class="step"><span class="num">2</span><span>用 Email 或 Google 帳號免費註冊</span></div>
+      <div class="step"><span class="num">3</span><span>點「Create API Key」→ 複製 Key（gsk_ 開頭）</span></div>
+      <div class="step"><span class="num">4</span><span>貼到下方即可，完全免費</span></div>
+    </div>
+    <label>Groq API Key</label>
+    <input type="password" id="keyInput" placeholder="gsk_..." />
+    <p class="hint">Key 只存在你的瀏覽器本地，不會上傳任何地方</p>
+    <label>自動更新頻率</label>
+    <select id="ivSelect">
+      <option value="0">不自動更新（手動）</option>
+      <option value="3600000" selected>每 1 小時</option>
+      <option value="10800000">每 3 小時</option>
+      <option value="21600000">每 6 小時</option>
+      <option value="43200000">每 12 小時</option>
+      <option value="86400000">每 24 小時</option>
+    </select>
+    <button class="btn-primary" id="startBtn">開始使用 →</button>
+  </div>
+</div>
+
+<div id="app">
+  <div class="top-bar">
+    <div>
+      <div class="app-title">熱門板塊 · 股票追蹤 Pro</div>
+      <div class="app-sub">100個細分板塊 · 由 Groq AI 根據最新市場熱度自動排列</div>
+    </div>
+    <div class="controls">
+      <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="autoTog"><span class="slider"></span></label>
+        <span>自動更新</span>
+      </div>
+      <span id="cdown" style="font-size:11px;color:#bbb"></span>
+      <button class="btn btn-orange" id="refBtn">↻ 立即更新</button>
+      <button class="btn btn-red" id="resetBtn">重設</button>
+    </div>
+  </div>
+  <div class="status-bar">
+    <span class="dot" id="sdot"></span>
+    <span id="stime">尚未載入</span>
+    <span id="scnt"></span>
+  </div>
+
+  <div class="cat-tabs" id="catTabs">
+    <button class="ctab active" data-cat="全部">全部</button>
+  </div>
+
+  <div class="filter-bar">
+    <button class="fbtn active" data-f="all">全部熱度</button>
+    <button class="fbtn" data-f="hot">🔴 極熱 (1-30)</button>
+    <button class="fbtn" data-f="warm">🟡 升溫 (31-65)</button>
+    <button class="fbtn" data-f="normal">⚪ 穩定 (66+)</button>
+  </div>
+
+  <div class="search-row">
+    <input type="text" id="searchBox" placeholder="搜尋板塊名稱或股票代碼...">
+  </div>
+
+  <div id="errBox" class="error" style="display:none"></div>
+  <div class="result-count" id="resultCount"></div>
+  <div id="grid" class="grid"><div class="empty">點擊「立即更新」載入最新 100 個板塊資料...</div></div>
+  <div id="hist" class="hist" style="display:none"><h3>更新記錄</h3><div id="hlist"></div></div>
+</div>
+
+<script>
+var sectors = [], curFilter = 'all', curCat = '全部', searchTerm = '';
+var apiKey = '', ivMs = 3600000;
+var autoTmr = null, cdTmr = null, nextAt = null, hist = [];
+
+var PROMPT = function(today) {
+  return '今天是' + today + '。你是頂級股票分析師，熟悉所有美股市場動態。\n\n請根據最新市場新聞、科技趨勢、投資熱度，列出100個美股細分板塊，從最熱門排列到最傳統。\n\n重要：板塊必須非常細分，不能籠統。例如：\n- AI軟件不夠細，要分成：AI基建平台、AI代理/Agent、AI代碼工具、AI企業應用、AI醫療診斷、AI法律科技、AI金融分析、AI網絡安全、AI晶片設計等\n- 雲端不夠細，要分成：超大型雲(hyperscaler)、雲安全、邊緣運算、雲數據庫、雲通訊CPaaS、多雲管理等\n- 硬件要分成：AI訓練晶片、AI推理晶片、記憶體HBM、先進封裝、晶圓代工、半導體設備、半導體材料、PCB/基板等\n- 軟件要分成：企業SaaS、垂直SaaS、低代碼平台、網絡安全SaaS、數據分析平台等\n\n每個板塊提供4-6個真實美股代碼（必須是NYSE或NASDAQ上市的真實股票）。\nreason限15字內說明近期熱門原因。\ncategory使用以下之一：AI科技、半導體、雲端、軟件、網絡安全、太空國防、生物科技、醫療、金融科技、加密/區塊鏈、電動車、清潔能源、傳統能源、電商零售、社交媒體、娛樂媒體、工業科技、消費品、金融銀行、房地產、工業、原材料、農業、醫療器材、公用事業\n\nheat值：hot=排名1-30，warm=排名31-65，normal=排名66+\n\n只回傳JSON，絕對不能有任何其他文字、解釋或markdown：\n{"sectors":[{"rank":1,"name":"板塊細分名稱","category":"分類","heat":"hot","reason":"原因","stocks":["NVDA","AMD"]}]}';
+};
+
+async function callGroq(prompt) {
+  var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        { role: 'system', content: '你是頂級股票分析師。只回傳純JSON，絕不包含任何markdown、解釋或其他文字。' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.7,
+      max_tokens: 8000
+    })
+  });
+  if (!res.ok) {
+    var err = await res.json().catch(function(){ return {}; });
+    throw new Error((err.error && err.error.message) ? err.error.message : 'HTTP ' + res.status);
+  }
+  var data = await res.json();
+  return data.choices[0].message.content;
+}
+
+function getCategories() {
+  var cats = ['全部'];
+  var seen = {};
+  sectors.forEach(function(s) { if (s.category && !seen[s.category]) { seen[s.category]=1; cats.push(s.category); } });
+  return cats;
+}
+
+function buildCatTabs() {
+  var cats = getCategories();
+  var html = cats.map(function(c) {
+    return '<button class="ctab' + (c === curCat ? ' active' : '') + '" data-cat="' + c + '">' + c + '</button>';
+  }).join('');
+  document.getElementById('catTabs').innerHTML = html;
+  document.querySelectorAll('.ctab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      curCat = this.getAttribute('data-cat');
+      document.querySelectorAll('.ctab').forEach(function(b){ b.classList.remove('active'); });
+      this.classList.add('active');
+      render();
+    });
+  });
+}
+
+function getFiltered() {
+  return sectors.filter(function(s) {
+    var heatOk = curFilter === 'all' || s.heat === curFilter;
+    var catOk  = curCat === '全部' || s.category === curCat;
+    var srch   = searchTerm.toLowerCase();
+    var searchOk = !srch ||
+      s.name.toLowerCase().includes(srch) ||
+      (s.category||'').toLowerCase().includes(srch) ||
+      (s.reason||'').toLowerCase().includes(srch) ||
+      (s.stocks||[]).some(function(t){ return t.toLowerCase().includes(srch); });
+    return heatOk && catOk && searchOk;
+  });
+}
+
+function render() {
+  var g = document.getElementById('grid');
+  var list = getFiltered();
+  document.getElementById('resultCount').textContent = list.length + ' 個板塊';
+  if (!list.length) { g.innerHTML = '<div class="empty">沒有符合的板塊</div>'; return; }
+  var label = { hot:'極熱', warm:'升溫', normal:'穩定' };
+  g.innerHTML = list.map(function(s) {
+    var stocks = (s.stocks||[]).map(function(t){ return '<span class="tag">'+t+'</span>'; }).join('');
+    return '<div class="card '+s.heat+'">' +
+      '<div class="card-head"><div><div class="card-name">'+s.rank+'. '+s.name+'</div><div class="card-cat">'+(s.category||'')+'</div></div>' +
+      '<span class="badge '+s.heat+'">'+(label[s.heat]||s.heat)+'</span></div>' +
+      '<div class="reason">'+s.reason+'</div>' +
+      '<div class="stocks">'+stocks+'</div></div>';
+  }).join('');
+}
+
+function renderHist() {
+  var p = document.getElementById('hist');
+  if (!hist.length) { p.style.display='none'; return; }
+  p.style.display='block';
+  document.getElementById('hlist').innerHTML = hist.slice(-8).reverse().map(function(h){
+    return '<div class="hitem"><span>'+h.t+'</span><span>'+h.c+' 個板塊</span></div>';
+  }).join('');
+}
+
+async function load() {
+  var btn = document.getElementById('refBtn');
+  var g = document.getElementById('grid');
+  var eb = document.getElementById('errBox');
+  var dot = document.getElementById('sdot');
+  btn.disabled = true; eb.style.display = 'none'; dot.className = 'dot';
+  g.innerHTML = '<div class="empty"><span class="spin"></span>Groq AI 正在分析最新市場，生成 100 個細分板塊...</div>';
+  document.getElementById('resultCount').textContent = '';
+
+  var today = new Date().toLocaleDateString('zh-HK', { year:'numeric', month:'long', day:'numeric' });
+
+  try {
+    var text = await callGroq(PROMPT(today));
+    text = text.replace(/```json/g,'').replace(/```/g,'').trim();
+    var s = text.indexOf('{'), e = text.lastIndexOf('}');
+    if (s === -1) throw new Error('回應格式錯誤，請重試');
+    var parsed = JSON.parse(text.slice(s, e+1));
+    if (!parsed.sectors || !parsed.sectors.length) throw new Error('沒有收到板塊資料，請重試');
+    sectors = parsed.sectors;
+
+    curCat = '全部'; curFilter = 'all'; searchTerm = '';
+    document.getElementById('searchBox').value = '';
+    document.querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelector('.fbtn[data-f="all"]').classList.add('active');
+
+    buildCatTabs();
+    render();
+
+    var ts = new Date().toLocaleString('zh-HK');
+    document.getElementById('stime').textContent = '最後更新：' + ts;
+    document.getElementById('scnt').textContent = '共 ' + sectors.length + ' 個板塊';
+    dot.className = 'dot live';
+
+    hist.push({ t: ts, c: sectors.length });
+    if (hist.length > 20) hist = hist.slice(-20);
+    localStorage.setItem('st5_hist', JSON.stringify(hist));
+    renderHist();
+  } catch(err) {
+    eb.textContent = '❌ 錯誤：' + err.message;
+    eb.style.display = 'block';
+    dot.className = 'dot err';
+    if (sectors.length > 0) render();
+    else g.innerHTML = '<div class="empty">載入失敗，請重試</div>';
+  }
+  btn.disabled = false;
+}
+
+function startAuto() {
+  clearInterval(autoTmr); clearInterval(cdTmr);
+  if (!ivMs) return;
+  nextAt = Date.now() + ivMs;
+  autoTmr = setInterval(function(){ load(); nextAt = Date.now() + ivMs; }, ivMs);
+  cdTmr = setInterval(updateCd, 1000);
+  updateCd();
+}
+
+function updateCd() {
+  if (!nextAt) return;
+  var r = nextAt - Date.now();
+  if (r <= 0) { document.getElementById('cdown').textContent = ''; return; }
+  var h = Math.floor(r/3600000), m = Math.floor((r%3600000)/60000), s = Math.floor((r%60000)/1000);
+  document.getElementById('cdown').textContent = (h?h+'時':'') + ((m||h)?m+'分':'') + s+'秒後更新';
+}
+
+function startApp() {
+  var k = document.getElementById('keyInput').value.trim();
+  if (!k.startsWith('gsk_')) { alert('請輸入正確的 Groq API Key（以 gsk_ 開頭）'); return; }
+  apiKey = k;
+  ivMs = parseInt(document.getElementById('ivSelect').value) || 0;
+  localStorage.setItem('st5_key', k);
+  localStorage.setItem('st5_iv', ivMs);
+
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  try { hist = JSON.parse(localStorage.getItem('st5_hist') || '[]'); } catch(e){ hist=[]; }
+  renderHist();
+
+  if (ivMs > 0) { document.getElementById('autoTog').checked = true; startAuto(); }
+  load();
+}
+
+function resetApp() {
+  if (!confirm('確定重設所有設定？')) return;
+  ['st5_key','st5_iv','st5_hist'].forEach(function(k){ localStorage.removeItem(k); });
+  clearInterval(autoTmr); clearInterval(cdTmr);
+  sectors = []; hist = []; apiKey = '';
+  document.getElementById('setup').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('keyInput').value = '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var sk = localStorage.getItem('st5_key');
+  if (sk) {
+    document.getElementById('keyInput').value = sk;
+    var si = localStorage.getItem('st5_iv');
+    if (si) document.getElementById('ivSelect').value = si;
+  }
+  document.getElementById('startBtn').addEventListener('click', startApp);
+  document.getElementById('refBtn').addEventListener('click', load);
+  document.getElementById('resetBtn').addEventListener('click', resetApp);
+  document.getElementById('autoTog').addEventListener('change', function() {
+    if (this.checked) { startAuto(); }
+    else { clearInterval(autoTmr); clearInterval(cdTmr); document.getElementById('cdown').textContent = ''; nextAt = null; }
+  });
+  document.querySelectorAll('.fbtn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      curFilter = this.getAttribute('data-f');
+      document.querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('active'); });
+      this.classList.add('active');
+      render();
+    });
+  });
+  document.getElementById('searchBox').addEventListener('input', function() {
+    searchTerm = this.value;
+    render();
+  });
+});
+</script>
+</body>
+</html>
