@@ -7,24 +7,17 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; }
-#setup { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+#setup { display: none; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
 .setup-card { background: #fff; border-radius: 16px; border: 1px solid #e0e0d8; padding: 2rem 2.5rem; max-width: 500px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-.setup-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #1a1a1a; }
-.desc { font-size: 13px; color: #666; margin-bottom: 1.2rem; line-height: 1.6; }
+.setup-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
 .badge-pro { display: inline-block; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 99px; font-size: 11px; padding: 2px 10px; margin-bottom: 1rem; font-weight: 600; }
-.steps { background: #f9f9f6; border-radius: 10px; padding: 14px 16px; margin-bottom: 1.5rem; border: 1px solid #eee; }
-.steps h3 { font-size: 11px; font-weight: 700; color: #999; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase; }
-.step { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; color: #444; align-items: flex-start; }
-.num { background: #f97316; color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-a { color: #f97316; text-decoration: none; }
 label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px; }
 input[type="password"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 10px; background: #fafafa; }
-.btn-primary { width: 100%; padding: 12px; background: #f97316; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-.btn-primary:hover { background: #ea6c0a; transform: translateY(-1px); }
+.btn-primary { width: 100%; padding: 12px; background: #f97316; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
 
 #app { display: none; max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
 .top-bar { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
-.app-title { font-size: 22px; font-weight: 700; color: #1a1a1a; }
+.app-title { font-size: 22px; font-weight: 700; }
 .controls { display: flex; gap: 10px; align-items: center; }
 .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #ddd; background: #fff; font-size: 13px; cursor: pointer; font-weight: 500; }
 .btn-orange { background: #f97316; color: #fff; border-color: #f97316; }
@@ -36,12 +29,11 @@ input[type="password"], select { width: 100%; padding: 12px; border: 1px solid #
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
 .cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
-.ctab { font-size: 12px; padding: 6px 14px; border-radius: 99px; border: 1px solid #ddd; background: #fff; cursor: pointer; transition: 0.2s; }
+.ctab { font-size: 12px; padding: 6px 14px; border-radius: 99px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
 .ctab.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; transition: 0.2s; position: relative; overflow: hidden; }
-.card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; transition: 0.2s; position: relative; }
 .card.hot { border-top: 4px solid #ef4444; }
 .card.warm { border-top: 4px solid #f59e0b; }
 .card.normal { border-top: 4px solid #94a3b8; }
@@ -51,63 +43,47 @@ input[type="password"], select { width: 100%; padding: 12px; border: 1px solid #
 .badge.hot { background: #fef2f2; color: #991b1b; }
 .badge.warm { background: #fffbeb; color: #92400e; }
 .badge.normal { background: #f8fafc; color: #475569; }
-.reason { font-size: 12px; color: #6b7280; margin-bottom: 12px; line-height: 1.5; min-height: 36px; }
+.reason { font-size: 11px; color: #6b7280; margin-bottom: 12px; line-height: 1.4; min-height: 32px; }
 .stocks { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; background: #f3f4f6; border: 1px solid #e5e7eb; font-family: monospace; color: #1f2937; font-weight: 600; text-decoration: none; transition: 0.2s; }
-.tag:hover { background: #1a6ef5; color: #fff; border-color: #1a6ef5; }
+.tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; background: #f3f4f6; border: 1px solid #e5e7eb; font-family: monospace; color: #1f2937; font-weight: 600; text-decoration: none; }
+.tag:hover { background: #1a6ef5; color: #fff; }
 
 .search-row { margin-bottom: 15px; }
 .search-row input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; }
 .spin { display: inline-block; width: 18px; height: 18px; border: 3px solid #eee; border-top-color: #f97316; border-radius: 50%; animation: rot .8s linear infinite; margin-right: 10px; }
 @keyframes rot { to{transform:rotate(360deg)} }
-@media(max-width:600px){ .grid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
 
 <div id="setup">
   <div class="setup-card">
-    <span class="badge-pro">PRO 產業鏈深度拆解版</span>
+    <span class="badge-pro">PRO 自動登入版</span>
     <h1>📊 美股板塊追蹤器</h1>
-    <p class="desc">直接連結 Groq AI 大腦，將市場拆解為 100 個極細分產業鏈，點擊代碼直達 TradingView。</p>
-    <div class="steps">
-      <h3>設定您的免費 Key</h3>
-      <div class="step"><span class="num">1</span><span>取得 <a href="https://console.groq.com/keys" target="_blank">Groq API Key</a> (免費)</span></div>
-      <div class="step"><span class="num">2</span><span>貼上 Key 並點擊開始</span></div>
-    </div>
     <label>Groq API Key</label>
     <input type="password" id="keyInput" placeholder="gsk_..." />
     <label>更新頻率</label>
     <select id="ivSelect">
       <option value="3600000">每 1 小時</option>
-      <option value="10800000">每 3 小時</option>
       <option value="0">手動更新</option>
     </select>
-    <button class="btn-primary" id="startBtn">啟動深度追蹤 →</button>
+    <button class="btn-primary" id="startBtn">啟動並記憶登入 →</button>
   </div>
 </div>
 
 <div id="app">
   <div class="top-bar">
     <div>
-      <div class="app-title">市場極細分板塊 (100)</div>
-      <div style="font-size:12px; color:#999; margin-top:4px;">根據最新產業鏈邏輯自動排列</div>
+      <div class="app-title">市場極細分板塊 (目標100)</div>
+      <div style="font-size:12px; color:#999; margin-top:4px;">自動拆解：上游、中游、下游產業鏈</div>
     </div>
     <div class="controls">
-      <button class="btn btn-orange" id="refBtn">↻ 立即分析最新熱度</button>
+      <button class="btn btn-orange" id="refBtn">↻ 立即分析</button>
       <button class="btn btn-red" id="resetBtn">重設</button>
     </div>
   </div>
-
-  <div class="status-bar">
-    <div class="dot" id="sdot"></div>
-    <span id="stime">等待載入...</span>
-  </div>
-
-  <div class="search-row">
-    <input type="text" id="searchBox" placeholder="搜尋板塊名稱、產業鏈關鍵字或股票代碼...">
-  </div>
-
+  <div class="status-bar"><div class="dot" id="sdot"></div><span id="stime">等待載入...</span></div>
+  <div class="search-row"><input type="text" id="searchBox" placeholder="搜尋板塊或代碼..."></div>
   <div class="cat-tabs" id="catTabs"></div>
   <div id="grid" class="grid"></div>
 </div>
@@ -115,16 +91,12 @@ input[type="password"], select { width: 100%; padding: 12px; border: 1px solid #
 <script>
 var sectors = [], curCat = '全部', searchTerm = '', apiKey = '';
 
-// --- 核心邏輯：極致細分 PROMPT ---
+// --- 強化 Prompt，精簡說明以換取更多板塊數量 ---
 var PROMPT = function(today) {
-  return '今天是' + today + '。你是華爾街頂級產業鏈分析師。\n\n' +
-         '【核心任務】請列出當前美股市場 100 個「極度細分」的板塊，按熱度排序。\n' +
-         '【產業鏈拆解要求】嚴禁使用籠統名稱。必須按上、中、下游邏輯拆解，例如：\n' +
-         '- 電力 ➔ 數據中心變壓器、SMR小型核反應爐、電網現代化、銅電纜、儲能系統。\n' +
-         '- AI/半導體 ➔ AI代理(Agents)、液冷散熱、推論晶片ASIC、光通訊/矽光子、先進封裝(CoWoS)、HBM記憶體。\n' +
-         '- 生技 ➔ GLP-1供應鏈、基因編輯、放射性標靶藥物、腦機接口。\n\n' +
-         '每個板塊提供 4-6 個真實美股代碼。只回傳純 JSON，格式如下：\n' +
-         '{"sectors":[{"rank":1,"name":"細分名稱","category":"分類","heat":"hot","reason":"原因","stocks":["代碼1","代碼2"]}]}';
+  return '今天是' + today + '。你是產業鏈分析師。請列出美股 100 個「極度細分」板塊，按熱度排序。\n' +
+         '要求：嚴禁籠統。必須拆解上中下游（例如：SMR核能、液冷散熱、CoWoS、減肥藥供應鏈、eVTOL）。\n' +
+         '每個板塊 3-5 個代碼。原因嚴格限制在 10 字內以節省空間。\n' +
+         '只回傳純 JSON 格式：{"sectors":[{"rank":1,"name":"細分名稱","category":"分類","heat":"hot","reason":"原因","stocks":["代碼1"]}]}';
 };
 
 async function callGroq(prompt) {
@@ -133,12 +105,11 @@ async function callGroq(prompt) {
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
-      messages: [{ role: 'system', content: 'You are a JSON only stock analyst.' }, { role: 'user', content: prompt }],
-      temperature: 0.6,
+      messages: [{ role: 'system', content: 'JSON only.' }, { role: 'user', content: prompt }],
+      temperature: 0.5,
       response_format: { type: "json_object" }
     })
   });
-  if (!res.ok) throw new Error('API 請求失敗');
   const data = await res.json();
   return data.choices[0].message.content;
 }
@@ -150,20 +121,13 @@ function render() {
     const matchSearch = s.name.includes(searchTerm) || (s.stocks||[]).some(t => t.includes(searchTerm.toUpperCase()));
     return matchCat && matchSearch;
   });
-
   const label = { hot: '🔥 極熱', warm: '📈 升溫', normal: '⚖️ 穩定' };
-  
   grid.innerHTML = filtered.map(s => `
     <div class="card ${s.heat}">
-      <div class="card-head">
-        <div class="card-name">${s.rank}. ${s.name}</div>
-        <span class="badge ${s.heat}">${label[s.heat] || '觀察'}</span>
-      </div>
-      <div style="font-size:10px; color:#f97316; margin-bottom:6px; font-weight:600;">${s.category}</div>
+      <div class="card-head"><div class="card-name">${s.rank}. ${s.name}</div><span class="badge ${s.heat}">${label[s.heat]}</span></div>
+      <div style="font-size:10px; color:#f97316; margin-bottom:4px; font-weight:600;">${s.category}</div>
       <div class="reason">${s.reason}</div>
-      <div class="stocks">
-        ${s.stocks.map(t => `<a href="https://www.tradingview.com/symbols/${t}/" target="_blank" class="tag" title="查看 TradingView 圖表">${t}</a>`).join('')}
-      </div>
+      <div class="stocks">${(s.stocks||[]).map(t => `<a href="https://www.tradingview.com/symbols/${t}/" target="_blank" class="tag">${t}</a>`).join('')}</div>
     </div>
   `).join('');
 }
@@ -172,40 +136,24 @@ async function loadData() {
   const btn = document.getElementById('refBtn');
   const dot = document.getElementById('sdot');
   btn.disabled = true;
-  document.getElementById('grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:100px;"><span class="spin"></span>正在進行全產業鏈掃描，請稍候...</div>';
-  
+  document.getElementById('grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:100px;"><span class="spin"></span>深度掃描中...</div>';
   try {
-    const today = new Date().toLocaleDateString();
-    const raw = await callGroq(PROMPT(today));
-    const data = JSON.parse(raw);
-    sectors = data.sectors;
-    
-    // 生成分類標籤
+    const raw = await callGroq(PROMPT(new Date().toLocaleDateString()));
+    sectors = JSON.parse(raw).sectors;
     const cats = ['全部', ...new Set(sectors.map(s => s.category))];
     document.getElementById('catTabs').innerHTML = cats.map(c => `<button class="ctab ${c===curCat?'active':''}" onclick="filterCat('${c}')">${c}</button>`).join('');
-    
     render();
-    document.getElementById('stime').textContent = '最後更新：' + new Date().toLocaleTimeString();
+    document.getElementById('stime').textContent = '更新於：' + new Date().toLocaleTimeString();
     dot.className = 'dot live';
-  } catch (e) {
-    alert('載入失敗: ' + e.message);
-    dot.className = 'dot';
-  } finally {
-    btn.disabled = false;
-  }
+  } catch (e) { alert('更新失敗，請檢查 Key'); dot.className = 'dot'; }
+  finally { btn.disabled = false; }
 }
 
-function filterCat(c) {
-  curCat = c;
-  document.querySelectorAll('.ctab').forEach(b => b.classList.toggle('active', b.textContent === c));
-  render();
-}
-
-document.getElementById('searchBox').oninput = (e) => { searchTerm = e.target.value; render(); };
+function filterCat(c) { curCat = c; render(); }
 
 document.getElementById('startBtn').onclick = () => {
   const key = document.getElementById('keyInput').value.trim();
-  if(!key.startsWith('gsk_')) return alert('請輸入正確的 Groq Key');
+  if(!key.startsWith('gsk_')) return alert('Key 格式不正確');
   apiKey = key;
   localStorage.setItem('groq_stock_key', key);
   document.getElementById('setup').style.display = 'none';
@@ -213,12 +161,19 @@ document.getElementById('startBtn').onclick = () => {
   loadData();
 };
 
-document.getElementById('refBtn').onclick = loadData;
 document.getElementById('resetBtn').onclick = () => { localStorage.clear(); location.reload(); };
 
+// --- 自動登入邏輯 ---
 window.onload = () => {
-  const saved = localStorage.getItem('groq_stock_key');
-  if(saved) document.getElementById('keyInput').value = saved;
+  const savedKey = localStorage.getItem('groq_stock_key');
+  if (savedKey) {
+    apiKey = savedKey;
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadData();
+  } else {
+    document.getElementById('setup').style.display = 'flex';
+  }
 };
 </script>
 </body>
