@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>美股產業鏈共振分析儀 Pro v2</title>
+<title>美股產業鏈共振分析儀 Pro v2.1 (修復版)</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; }
@@ -58,9 +58,10 @@ input[type="password"], input[type="text"], textarea, select { width: 100%; padd
 .conf-low { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
  
 .reason { font-size: 11.5px; color: #6b7280; margin: 6px 0; line-height: 1.5; }
-.stocks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.stocks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; min-height: 24px; }
 .tag { font-size: 11px; padding: 3px 9px; border-radius: 6px; background: #f3f4f6; border: 1px solid #e5e7eb; font-family: monospace; color: #1f2937; text-decoration: none; display: inline-block; cursor: pointer; transition: 0.15s; }
 .tag:hover { background: #dbeafe; border-color: #93c5fd; color: #1e40af; }
+.tag.empty-tag { background: #fee2e2; color: #991b1b; border-color: #fecaca; cursor: not-allowed; }
  
 .data-source { font-size: 10px; color: #9ca3af; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
 .ds-badge { padding: 1px 6px; border-radius: 4px; font-size: 10px; }
@@ -88,8 +89,8 @@ input[type="password"], input[type="text"], textarea, select { width: 100%; padd
  
 <div id="setup">
   <div class="setup-card">
-    <span class="badge-pro">DATA-SYNERGY v2</span>
-    <span class="badge-new">真實數據版</span>
+    <span class="badge-pro">DATA-SYNERGY v2.1</span>
+    <span class="badge-new">代碼修復版</span>
     <h1 style="font-size:22px; margin-bottom:6px;">📊 產業鏈共振分析儀</h1>
     <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">真實市場數據 × AI 產業鏈推理</p>
  
@@ -103,7 +104,6 @@ input[type="password"], input[type="text"], textarea, select { width: 100%; padd
  
     <div id="errorSetup" class="error-msg"></div>
     <button class="btn-primary" id="startBtn">啟動真實數據分析引擎 →</button>
-    <p class="setup-note">⚠️ Yahoo Finance 數據透過 allorigins.win proxy 抓取。若網路受限，系統自動切換至 AI 模式。</p>
   </div>
 </div>
  
@@ -195,12 +195,13 @@ function buildPrompt(today, pulse, realTickers) {
     + '【額外市場脈搏輸入】:\n"' + (pulse || '無額外輸入') + '"\n\n'
     + '【任務】列出美股 40 個「極細分」板塊，按熱度嚴格排序。\n\n'
     + '【共振邏輯】:\n'
-    + '1. 若上述真實數據有 2+ 股票屬同一細分產業 → 該板塊必須進 Rank 1-10\n'
-    + '2. 每個 reason 必須包含：至少1個具體股票異動 OR 明確事件（earnings/guidance/政策）\n'
-    + '3. 產業鏈延伸：識別上下游聯動關係\n'
-    + '4. confidence 分數：基於數據支撐強度給 0-100 分（真實數據支撐 = 高分，純推測 = 低分）\n\n'
+    + '1. 若真實數據有 2+ 股票屬同一細分產業 → 該板塊必須進 Rank 1-10\n'
+    + '2. 每個 reason 必須包含：具體股票異動 OR 明確事件\n'
+    + '3. 信心度(confidence)：基於數據支撐強度給 0-100 分\n\n'
+    + '⚠️【嚴格要求：股票代碼】⚠️\n'
+    + '每個板塊【必須】提供至少 3-5 個相關的真實美股代碼，絕對不能為空！\n\n'
     + '回傳純 JSON（無任何 markdown）:\n'
-    + '{"sectors":[{"rank":1,"name":"細分名稱","category":"分類","heat":"hot","confidence":85,"reason":"含具體數據的分析師點評","momentum":"rising","stocks":["T1","T2","T3","T4","T5"]}]}\n\n'
+    + '{"sectors":[{"rank":1,"name":"細分名稱","category":"分類","heat":"hot","confidence":85,"reason":"分析師點評","momentum":"rising","stocks":["T1","T2","T3","T4","T5"]}]}\n\n'
     + 'heat 只能是: hot / warm / neutral\n'
     + 'momentum 只能是: rising / stable / fading';
 }
@@ -212,11 +213,11 @@ async function callGroq(prompt) {
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: 'You are a JSON-only stock sector analyst. Return ONLY valid JSON, no markdown, no explanation.' },
+        { role: 'system', content: 'You are a JSON-only stock sector analyst. Return ONLY valid JSON, no markdown, no explanation. You MUST provide at least 3 stocks per sector.' },
         { role: 'user', content: prompt }
       ],
       temperature: 0.4,
-      max_tokens: 4000,
+      max_tokens: 4500,
       response_format: { type: 'json_object' }
     })
   });
@@ -258,9 +259,16 @@ function render() {
     var momentumIcon = s.momentum === 'rising' ? '↑' : s.momentum === 'fading' ? '↓' : '→';
     var dsClass = realDataFetched ? 'ds-real' : 'ds-ai';
     var dsLabel = realDataFetched ? '真實數據' : 'AI推理';
-    var stockTags = (s.stocks||[]).map(function(t) {
-      return '<a href="https://www.tradingview.com/symbols/' + t + '/" target="_blank" class="tag">' + t + '</a>';
-    }).join('');
+    
+    // 生成股票標籤
+    var stockTags = '';
+    if (!s.stocks || s.stocks.length === 0 || s.stocks[0] === '未提供代碼') {
+      stockTags = '<span class="tag empty-tag">AI未提供代碼</span>';
+    } else {
+      stockTags = s.stocks.map(function(t) {
+        return '<a href="https://www.tradingview.com/symbols/' + t + '/" target="_blank" class="tag">' + t + '</a>';
+      }).join('');
+    }
  
     return '<div class="card ' + s.heat + '">' +
       '<div class="card-header">' +
@@ -333,13 +341,17 @@ async function loadData() {
       throw new Error('AI 回傳數據不完整，請重試');
     }
  
-    var seenTickers = {};
+    // 【關鍵修復】：移除了全局去重，現在只在「單一個板塊」內部去重，保留代碼！
     sectors = parsed.sectors.map(function(s) {
-      var uniqueStocks = (s.stocks||[]).filter(function(t) {
-        if (seenTickers[t]) return false;
-        seenTickers[t] = true;
-        return true;
-      });
+      // 確保 stocks 是一個陣列，並且在單一卡片內部過濾掉重複的字眼
+      var rawStocks = Array.isArray(s.stocks) ? s.stocks : [];
+      var uniqueStocks = Array.from(new Set(rawStocks)).filter(Boolean); // 過濾掉 null 或空字串
+      
+      // 保底機制：如果 AI 真的沒給，至少顯示一個提示
+      if (uniqueStocks.length === 0) {
+        uniqueStocks = ['未提供代碼'];
+      }
+      
       return Object.assign({}, s, { stocks: uniqueStocks });
     });
  
