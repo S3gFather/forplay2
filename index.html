@@ -3,436 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>美股產業鏈共振分析儀 Pro v2.1 (修復版)</title>
+<title>美股產業鏈分析儀 v2.3 (供應鏈聯動版)</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; }
- 
 #setup { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
 .setup-card { background: #fff; border-radius: 16px; border: 1px solid #e0e0d8; padding: 2rem 2.5rem; max-width: 520px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-.badge-pro { display: inline-block; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 99px; font-size: 11px; padding: 2px 10px; margin-bottom: 1rem; font-weight: 600; }
-.badge-new { display: inline-block; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 99px; font-size: 10px; padding: 2px 8px; margin-left: 6px; font-weight: 600; }
-input[type="password"], input[type="text"], textarea, select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 10px; background: #fafafa; color: #1a1a1a; }
+.badge { display: inline-block; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 99px; font-size: 11px; padding: 2px 10px; margin-bottom: 1rem; font-weight: 600; }
+input[type="password"], textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 10px; background: #fafafa; }
 .btn-primary { width: 100%; padding: 12px; background: #f97316; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
-.setup-note { font-size: 12px; color: #9ca3af; margin-top: 8px; line-height: 1.5; }
-.divider { border: none; border-top: 1px solid #e5e7eb; margin: 16px 0; }
-.label { font-size: 13px; color: #6b7280; margin-bottom: 4px; display: block; }
- 
 #app { display: none; max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
-.top-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
-.app-title h3 { font-size: 16px; font-weight: 700; }
-.app-title span { font-size: 12px; color: #9ca3af; }
-.controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
- 
-.filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-.filter-btn { padding: 5px 14px; border: 1px solid #e5e7eb; border-radius: 99px; background: #fff; font-size: 12px; cursor: pointer; color: #374151; transition: 0.15s; }
-.filter-btn.active { background: #f97316; color: #fff; border-color: #f97316; }
- 
+.top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .pulse-box { background: #fff; border: 1px solid #fed7aa; border-left: 4px solid #f97316; padding: 12px 14px; border-radius: 10px; margin-bottom: 14px; }
-.pulse-box h4 { font-size: 12px; color: #e65100; margin-bottom: 6px; font-weight: 600; }
-.pulse-row { display: flex; gap: 8px; align-items: flex-start; }
-.pulse-box textarea { height: 52px; margin-bottom: 0; flex: 1; font-size: 12px; border-color: #fde68a; resize: none; }
-.auto-btn { padding: 8px 14px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; font-size: 12px; color: #c2410c; cursor: pointer; white-space: nowrap; font-weight: 600; line-height: 1.6; }
-.auto-btn:hover { background: #ffedd5; }
- 
-.status-bar { font-size: 11px; color: #9ca3af; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: #d1d5db; display: inline-block; }
-.dot.live { background: #22c55e; animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
- 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
-.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; transition: 0.2s; position: relative; }
-.card.hot { border-top: 3px solid #ef4444; }
-.card.warm { border-top: 3px solid #f97316; }
-.card.neutral { border-top: 3px solid #6b7280; }
-.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
- 
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-.card-rank { font-size: 11px; color: #9ca3af; font-weight: 700; margin-right: 4px; }
-.card-name { font-size: 14px; font-weight: 700; color: #111827; flex: 1; }
-.card-meta { display: flex; align-items: center; gap: 6px; }
-.category-tag { font-size: 10px; color: #f97316; font-weight: 700; }
-.conf-badge { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; }
-.conf-high { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-.conf-mid { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
-.conf-low { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
- 
-.reason { font-size: 11.5px; color: #6b7280; margin: 6px 0; line-height: 1.5; }
-.stocks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; min-height: 24px; }
-.tag { font-size: 11px; padding: 3px 9px; border-radius: 6px; background: #f3f4f6; border: 1px solid #e5e7eb; font-family: monospace; color: #1f2937; text-decoration: none; display: inline-block; cursor: pointer; transition: 0.15s; }
+.pulse-box textarea { height: 80px; font-size: 12px; resize: none; margin-bottom: 5px; border-color: #fde68a; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; position: relative; transition: 0.2s; }
+.card.hot { border-top: 4px solid #ef4444; background: #fffafb; }
+.card-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: flex-start; }
+.card-name { font-size: 15px; font-weight: 700; color: #111827; flex: 1; }
+.reason { font-size: 12px; color: #4b5563; line-height: 1.5; margin-bottom: 10px; }
+.stocks { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #f3f4f6; border: 1px solid #e5e7eb; text-decoration: none; color: #1f2937; font-family: monospace; font-weight: 600; }
 .tag:hover { background: #dbeafe; border-color: #93c5fd; color: #1e40af; }
-.tag.empty-tag { background: #fee2e2; color: #991b1b; border-color: #fecaca; cursor: not-allowed; }
- 
-.data-source { font-size: 10px; color: #9ca3af; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
-.ds-badge { padding: 1px 6px; border-radius: 4px; font-size: 10px; }
-.ds-real { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-.ds-ai { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
- 
+.conf-badge { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+.high { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.low { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 .spin { display: inline-block; width: 16px; height: 16px; border: 2px solid #eee; border-top-color: #f97316; border-radius: 50%; animation: rot .8s linear infinite; }
 @keyframes rot { to{transform:rotate(360deg)} }
- 
-.btn-sm { padding: 7px 16px; background: #f97316; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
-.btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-ghost { border: none; background: none; color: #9ca3af; cursor: pointer; font-size: 12px; }
- 
-.error-msg { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; color: #dc2626; font-size: 13px; margin-bottom: 12px; display: none; }
- 
-.loading-placeholder { grid-column: 1/-1; text-align: center; padding: 80px 20px; color: #9ca3af; }
-.loading-placeholder p { font-size: 13px; margin-top: 12px; }
- 
-.stats-bar { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
-.stat { font-size: 12px; color: #6b7280; }
-.stat strong { color: #111827; }
 </style>
 </head>
 <body>
- 
+
 <div id="setup">
   <div class="setup-card">
-    <span class="badge-pro">DATA-SYNERGY v2.1</span>
-    <span class="badge-new">代碼修復版</span>
-    <h1 style="font-size:22px; margin-bottom:6px;">📊 產業鏈共振分析儀</h1>
-    <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">真實市場數據 × AI 產業鏈推理</p>
- 
-    <label class="label">Groq API Key <span style="color:#9ca3af">(用於 AI 分析)</span></label>
-    <input type="password" id="keyInput" placeholder="gsk_..." />
- 
-    <hr class="divider">
- 
-    <label class="label">Yahoo Finance 數據 <span style="color:#22c55e; font-weight:600;">(免費，無需 Key)</span></label>
-    <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">系統將自動抓取今日 Top Gainers / Volume Surge 真實數據，注入 AI 分析。</p>
- 
-    <div id="errorSetup" class="error-msg"></div>
-    <button class="btn-primary" id="startBtn">啟動真實數據分析引擎 →</button>
+    <span class="badge">V2.3 供應鏈聯動版</span>
+    <h1 style="font-size:22px; margin-bottom:10px;">📊 產業鏈共振分析儀</h1>
+    <p style="font-size:13px; color:#6b7280; margin-bottom:20px;">識別單點爆發，推演隱形股群</p>
+    <input type="password" id="keyInput" placeholder="Groq API Key (gsk_...)" />
+    <button class="btn-primary" id="startBtn">啟動 AI 供應鏈掃描儀 →</button>
   </div>
 </div>
- 
+
 <div id="app">
   <div class="top-bar">
-    <div class="app-title">
-      <h3>產業鏈共振分析儀 <span style="font-size:11px; color:#22c55e; font-weight:600;">● 真實數據版</span></h3>
-      <span id="lastUpdate">尚未更新</span>
-    </div>
-    <div class="controls">
-      <button class="btn-sm" id="refBtn">↻ 重新分析</button>
-      <button class="btn-ghost" id="resetBtn">重設</button>
+    <h3>美股實時產業鏈分析 <span id="lastUpdate" style="font-size:12px; color:#999; font-weight:normal;"></span></h3>
+    <div>
+      <button class="btn-primary" id="refBtn" style="padding: 6px 15px; font-size: 13px;">重新掃描市場</button>
+      <button onclick="localStorage.clear();location.reload();" style="font-size:12px; border:none; background:none; color:#9ca3af; cursor:pointer; margin-left:10px;">重設</button>
     </div>
   </div>
- 
-  <div id="errorApp" class="error-msg"></div>
- 
+
   <div class="pulse-box">
-    <h4>📡 市場脈搏</h4>
-    <div class="pulse-row">
-      <textarea id="marketPulse" placeholder="系統已自動抓取今日異動股。你也可以手動補充熱點新聞..."></textarea>
-      <button class="auto-btn" id="autoFetchBtn">⚡ 自動抓取<br>真實數據</button>
-    </div>
+    <h4>📡 數據注入窗口 (市場異動/政策消息)</h4>
+    <textarea id="marketPulse" placeholder="範例：波音 BA 獲得大額轉移訂單爆量；或者 量子電腦 IONQ, RGTI 板塊集體異動..."></textarea>
+    <p style="font-size:11px; color:#f97316; font-weight:500;">提示：輸入單一龍頭異動，AI 將自動帶出其背後的供應鏈股群。</p>
   </div>
- 
-  <div class="filter-bar">
-    <span style="font-size:12px; color:#6b7280;">顯示：</span>
-    <button class="filter-btn active" data-n="10">Top 10</button>
-    <button class="filter-btn" data-n="20">Top 20</button>
-    <button class="filter-btn" data-n="40">全部 40</button>
-    <span style="font-size:12px; color:#6b7280; margin-left:8px;">信心度：</span>
-    <button class="filter-btn active" data-conf="all">全部</button>
-    <button class="filter-btn" data-conf="high">高 (≥75)</button>
-  </div>
- 
-  <div class="stats-bar" id="statsBar"></div>
-  <div class="status-bar"><span class="dot" id="statusDot"></span><span id="statusText">待機中</span></div>
+
   <div id="grid" class="grid"></div>
 </div>
- 
+
 <script>
-var sectors = [], apiKey = '', activeN = 10, activeConf = 'all', realDataFetched = false;
- 
-async function fetchRealMarketData() {
-  const proxies = [
-    url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
-    url => 'https://corsproxy.io/?' + encodeURIComponent(url)
-  ];
-  const endpoints = [
-    { url: 'https://finance.yahoo.com/markets/stocks/gainers/?start=0&count=20' },
-    { url: 'https://finance.yahoo.com/markets/stocks/most-active/?start=0&count=20' }
-  ];
- 
-  var results = [];
-  var blacklist = ['NYSE','NASDAQ','SEC','ETF','EPS','IPO','CEO','CFO','USD','THE','FOR','AND','ARE','NOT','BUT','FROM','WITH','THIS','THAT','WILL','HAVE','BEEN','MORE','INC','LLC','LTD','COM','NET','ORG'];
- 
-  for (var i = 0; i < endpoints.length; i++) {
-    for (var j = 0; j < proxies.length; j++) {
-      try {
-        var r = await fetch(proxies[j](endpoints[i].url), { signal: AbortSignal.timeout(8000) });
-        if (!r.ok) continue;
-        var html = await r.text();
-        var matches = html.match(/\b([A-Z]{2,5})\b/g) || [];
-        var freq = {};
-        matches.forEach(function(t) {
-          if (!blacklist.includes(t)) freq[t] = (freq[t]||0) + 1;
-        });
-        var top = Object.entries(freq)
-          .filter(function(e){ return e[1] >= 2; })
-          .sort(function(a,b){ return b[1]-a[1]; })
-          .slice(0, 15)
-          .map(function(e){ return e[0]; });
-        if (top.length > 3) { results = results.concat(top); break; }
-      } catch(e) { continue; }
-    }
-  }
- 
-  var seen = {};
-  return results.filter(function(t){ if(seen[t]) return false; seen[t]=true; return true; }).slice(0, 20);
-}
- 
-function buildPrompt(today, pulse, realTickers) {
-  var tickerStr = realTickers.length > 0
-    ? '【今日真實市場數據 - Yahoo Finance Top Movers】: ' + realTickers.join(', ')
-    : '【注意】無法取得真實數據，請按長線產業鏈邏輯分析。';
- 
-  return '今天是 ' + today + '。你是華爾街頂級產業鏈分析師。\n\n'
-    + tickerStr + '\n\n'
-    + '【額外市場脈搏輸入】:\n"' + (pulse || '無額外輸入') + '"\n\n'
-    + '【任務】列出美股 40 個「極細分」板塊，按熱度嚴格排序。\n\n'
-    + '【共振邏輯】:\n'
-    + '1. 若真實數據有 2+ 股票屬同一細分產業 → 該板塊必須進 Rank 1-10\n'
-    + '2. 每個 reason 必須包含：具體股票異動 OR 明確事件\n'
-    + '3. 信心度(confidence)：基於數據支撐強度給 0-100 分\n\n'
-    + '⚠️【嚴格要求：股票代碼】⚠️\n'
-    + '每個板塊【必須】提供至少 3-5 個相關的真實美股代碼，絕對不能為空！\n\n'
-    + '回傳純 JSON（無任何 markdown）:\n'
-    + '{"sectors":[{"rank":1,"name":"細分名稱","category":"分類","heat":"hot","confidence":85,"reason":"分析師點評","momentum":"rising","stocks":["T1","T2","T3","T4","T5"]}]}\n\n'
-    + 'heat 只能是: hot / warm / neutral\n'
-    + 'momentum 只能是: rising / stable / fading';
-}
- 
+var apiKey = '', sectors = [];
+
+// 核心邏輯 v2.3：強化單一龍頭與供應鏈推演
+const BUILD_PROMPT = (pulse, tickers) => `
+今天是 ${new Date().toLocaleDateString()}。你是頂級產業分析師。
+市場異動股：${tickers.join(', ')}
+用戶補充消息：${pulse}
+
+【任務：結構性異動推演】
+1. 單點觸發效應：若有單一龍頭(如 Boeing, NVDA, TSLA)因重大消息暴漲，即便供應商尚未異動，也必須將該「供應鏈板塊」排在 Rank 1-3。
+2. 自動補全股群：在該板塊下，必須列出該龍頭及其 3-4 個關鍵供應商或同業競爭者。
+3. 結構性移轉判定：若涉及合約轉移(如 SpaceX 轉向 Boeing)、份額變動，請標註為「產業重估」。
+4. 噪音過濾：區分「產業基本面利多」與「公司內部噪音」。
+   - 技術/合約/訂單 = High Confidence (🔥 產業推進)。
+   - 股權變動/行政管理/非業務支撐 = Low Confidence (⚠️ 公司噪音)。
+
+回傳純 JSON: {"sectors":[{"rank":1,"name":"細分名稱","conf":"high/low","reason":"分析點評(需註明領漲龍頭對全鏈的帶動力)","stocks":["龍頭代碼","供應商A","供應商B"]}]}
+`;
+
 async function callGroq(prompt) {
-  var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: 'You are a JSON-only stock sector analyst. Return ONLY valid JSON, no markdown, no explanation. You MUST provide at least 3 stocks per sector.' },
+        { role: 'system', content: 'You are a JSON-only Wall Street analyst. Focus on supply chain linkage.' },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.4,
-      max_tokens: 4500,
-      response_format: { type: 'json_object' }
+      response_format: { type: "json_object" },
+      temperature: 0.2, // 降低隨機性，增加邏輯穩定性
+      max_tokens: 4000
     })
   });
-  if (!res.ok) {
-    var err = await res.json().catch(function(){ return {}; });
-    throw new Error((err.error && err.error.message) || 'HTTP ' + res.status);
-  }
-  var data = await res.json();
-  return data.choices[0].message.content;
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error.message);
+  return JSON.parse(data.choices[0].message.content).sectors;
 }
- 
-function render() {
-  var grid = document.getElementById('grid');
-  var filtered = sectors.slice();
- 
-  if (activeConf === 'high') {
-    filtered = filtered.filter(function(s){ return (s.confidence||0) >= 75; });
-  }
-  filtered = filtered.slice(0, activeN);
- 
-  if (filtered.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#9ca3af; font-size:13px;">沒有符合條件的板塊</div>';
-    return;
-  }
- 
-  var hotCount = filtered.filter(function(s){ return s.heat === 'hot'; }).length;
-  var avgConf = Math.round(filtered.reduce(function(a,s){ return a + (s.confidence||50); }, 0) / filtered.length);
- 
-  document.getElementById('statsBar').innerHTML =
-    '<div class="stat">顯示 <strong>' + filtered.length + '</strong> 個板塊</div>' +
-    '<div class="stat">🔥 熱門板塊 <strong>' + hotCount + '</strong> 個</div>' +
-    '<div class="stat">平均信心度 <strong>' + avgConf + '</strong></div>' +
-    '<div class="stat">數據來源 <strong>' + (realDataFetched ? '真實數據 + AI' : '純AI推理') + '</strong></div>';
- 
-  grid.innerHTML = filtered.map(function(s) {
-    var conf = s.confidence || 0;
-    var confClass = conf >= 75 ? 'conf-high' : conf >= 50 ? 'conf-mid' : 'conf-low';
-    var confLabel = conf >= 75 ? '高信心' : conf >= 50 ? '中信心' : '低信心';
-    var momentumIcon = s.momentum === 'rising' ? '↑' : s.momentum === 'fading' ? '↓' : '→';
-    var dsClass = realDataFetched ? 'ds-real' : 'ds-ai';
-    var dsLabel = realDataFetched ? '真實數據' : 'AI推理';
+
+async function getYahooData() {
+  try {
+    const proxy = 'https://api.allorigins.win/raw?url=';
+    const target = 'https://finance.yahoo.com/markets/stocks/gainers/';
+    const r = await fetch(proxy + encodeURIComponent(target));
+    const html = await r.text();
+    const matches = html.match(/\b([A-Z]{2,5})\b/g) || [];
+    return [...new Set(matches)].slice(0, 15);
+  } catch { return []; }
+}
+
+async function runAnalysis() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:80px;"><span class="spin"></span><br><br>正在掃描供應鏈連動性與市場噪音...</div>';
+  
+  try {
+    const tickers = await getYahooData();
+    const pulse = document.getElementById('marketPulse').value;
+    const result = await callGroq(BUILD_PROMPT(pulse, tickers));
     
-    // 生成股票標籤
-    var stockTags = '';
-    if (!s.stocks || s.stocks.length === 0 || s.stocks[0] === '未提供代碼') {
-      stockTags = '<span class="tag empty-tag">AI未提供代碼</span>';
-    } else {
-      stockTags = s.stocks.map(function(t) {
-        return '<a href="https://www.tradingview.com/symbols/' + t + '/" target="_blank" class="tag">' + t + '</a>';
-      }).join('');
-    }
- 
-    return '<div class="card ' + s.heat + '">' +
-      '<div class="card-header">' +
-        '<div>' +
-          '<span class="card-rank">#' + s.rank + '</span>' +
-          '<span class="card-name">' + s.name + '</span>' +
-        '</div>' +
-        '<div class="card-meta">' +
-          '<span class="category-tag">' + s.category + '</span>' +
-          '<span class="conf-badge ' + confClass + '">' + confLabel + ' ' + conf + '</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="reason">' + momentumIcon + ' ' + s.reason + '</div>' +
-      '<div class="stocks">' + stockTags + '</div>' +
-      '<div class="data-source">' +
-        '<span class="ds-badge ' + dsClass + '">' + dsLabel + '</span>' +
-        '<span>momentum: ' + (s.momentum||'stable') + '</span>' +
-      '</div>' +
-    '</div>';
-  }).join('');
+    sectors = result;
+    render();
+    document.getElementById('lastUpdate').textContent = '最後更新: ' + new Date().toLocaleTimeString();
+  } catch (e) {
+    grid.innerHTML = '<div style="color:red;padding:20px;">分析失敗: ' + e.message + '</div>';
+  }
 }
- 
-async function loadData() {
-  var btn = document.getElementById('refBtn');
-  var errDiv = document.getElementById('errorApp');
-  var dot = document.getElementById('statusDot');
-  var statusText = document.getElementById('statusText');
- 
-  btn.disabled = true;
-  errDiv.style.display = 'none';
-  dot.className = 'dot live';
-  document.getElementById('grid').innerHTML = '<div class="loading-placeholder"><span class="spin"></span><p>正在抓取真實市場數據...</p></div>';
- 
-  statusText.textContent = '正在抓取 Yahoo Finance 真實數據...';
-  var realTickers = [];
-  try {
-    realTickers = await fetchRealMarketData();
-    realDataFetched = realTickers.length > 3;
-    if (realDataFetched) {
-      var existing = document.getElementById('marketPulse').value;
-      if (existing.indexOf('自動抓取') === -1) {
-        document.getElementById('marketPulse').value = '【自動抓取 Yahoo Finance】今日異動股：' + realTickers.join(', ') + '\n' + existing;
-      }
-    }
-  } catch(e) {
-    realDataFetched = false;
-  }
- 
-  statusText.textContent = realDataFetched
-    ? '已取得 ' + realTickers.length + ' 個真實股票數據，AI 分析中...'
-    : 'AI 純推理模式（無法取得真實數據）...';
- 
-  document.getElementById('grid').innerHTML = '<div class="loading-placeholder"><span class="spin"></span><p>' +
-    (realDataFetched ? '真實數據已注入，AI 進行產業鏈共振分析...' : '以 AI 推理模式進行分析...') + '</p></div>';
- 
-  try {
-    var pulse = document.getElementById('marketPulse').value;
-    var raw = await callGroq(buildPrompt(new Date().toLocaleDateString('zh-HK'), pulse, realTickers));
- 
-    var parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch(e) {
-      var match = raw.match(/\{[\s\S]*\}/);
-      if (match) parsed = JSON.parse(match[0]);
-      else throw new Error('AI 回傳格式錯誤，請重試');
-    }
- 
-    if (!parsed.sectors || !Array.isArray(parsed.sectors) || parsed.sectors.length === 0) {
-      throw new Error('AI 回傳數據不完整，請重試');
-    }
- 
-    // 【關鍵修復】：移除了全局去重，現在只在「單一個板塊」內部去重，保留代碼！
-    sectors = parsed.sectors.map(function(s) {
-      // 確保 stocks 是一個陣列，並且在單一卡片內部過濾掉重複的字眼
-      var rawStocks = Array.isArray(s.stocks) ? s.stocks : [];
-      var uniqueStocks = Array.from(new Set(rawStocks)).filter(Boolean); // 過濾掉 null 或空字串
-      
-      // 保底機制：如果 AI 真的沒給，至少顯示一個提示
-      if (uniqueStocks.length === 0) {
-        uniqueStocks = ['未提供代碼'];
-      }
-      
-      return Object.assign({}, s, { stocks: uniqueStocks });
-    });
- 
-    var now = new Date();
-    document.getElementById('lastUpdate').textContent = '更新於 ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
-    dot.className = 'dot live';
-    statusText.textContent = '分析完成 · ' + (realDataFetched ? '真實數據+AI' : 'AI推理') + ' · ' + sectors.length + ' 個板塊';
-    render();
- 
-  } catch(e) {
-    errDiv.textContent = '分析失敗：' + e.message;
-    errDiv.style.display = 'block';
-    dot.className = 'dot';
-    statusText.textContent = '分析失敗';
-    document.getElementById('grid').innerHTML = '';
-  }
- 
-  btn.disabled = false;
+
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = sectors.map(s => `
+    <div class="card ${s.rank <= 5 ? 'hot' : ''}">
+      <div class="card-header">
+        <span class="card-name">#${s.rank} ${s.name}</span>
+        <span class="conf-badge ${s.conf}">${s.conf === 'high' ? '🔥 產業推進' : '⚠️ 公司噪音'}</span>
+      </div>
+      <div class="reason">${s.reason}</div>
+      <div class="stocks">
+        ${s.stocks.map(t => `<a href="https://www.tradingview.com/symbols/${t}/" target="_blank" class="tag">${t}</a>`).join('')}
+      </div>
+    </div>
+  `).join('');
 }
- 
-document.querySelectorAll('.filter-btn[data-n]').forEach(function(btn) {
-  btn.onclick = function() {
-    document.querySelectorAll('.filter-btn[data-n]').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    activeN = parseInt(btn.dataset.n);
-    render();
-  };
-});
- 
-document.querySelectorAll('.filter-btn[data-conf]').forEach(function(btn) {
-  btn.onclick = function() {
-    document.querySelectorAll('.filter-btn[data-conf]').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    activeConf = btn.dataset.conf;
-    render();
-  };
-});
- 
-document.getElementById('autoFetchBtn').onclick = async function() {
-  var btn = document.getElementById('autoFetchBtn');
-  btn.textContent = '抓取中...';
-  btn.disabled = true;
-  try {
-    var tickers = await fetchRealMarketData();
-    if (tickers.length > 0) {
-      document.getElementById('marketPulse').value = '【自動抓取 Yahoo Finance】今日異動股：' + tickers.join(', ');
-      realDataFetched = true;
-    } else {
-      document.getElementById('marketPulse').value = '無法自動抓取，請手動輸入熱點。';
-    }
-  } catch(e) {
-    document.getElementById('marketPulse').value = '抓取失敗，請手動輸入。';
-  }
-  btn.innerHTML = '⚡ 自動抓取<br>真實數據';
-  btn.disabled = false;
-};
- 
-document.getElementById('startBtn').onclick = function() {
+
+document.getElementById('startBtn').onclick = () => {
   apiKey = document.getElementById('keyInput').value.trim();
-  if (!apiKey.startsWith('gsk_')) {
-    var errDiv = document.getElementById('errorSetup');
-    errDiv.textContent = 'Key 格式不正確，必須以 gsk_ 開頭';
-    errDiv.style.display = 'block';
-    return;
-  }
-  localStorage.setItem('groq_stock_key_v2', apiKey);
+  if(!apiKey.startsWith('gsk_')) return alert('Key 格式不正確');
+  localStorage.setItem('groq_stock_key_v23', apiKey);
   document.getElementById('setup').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  loadData();
+  runAnalysis();
 };
- 
-document.getElementById('refBtn').onclick = loadData;
-document.getElementById('resetBtn').onclick = function() { localStorage.clear(); location.reload(); };
- 
-window.onload = function() {
-  var saved = localStorage.getItem('groq_stock_key_v2');
-  if (saved) {
+
+document.getElementById('refBtn').onclick = runAnalysis;
+
+window.onload = () => {
+  const saved = localStorage.getItem('groq_stock_key_v23');
+  if(saved) {
     apiKey = saved;
     document.getElementById('setup').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-    loadData();
+    runAnalysis();
   }
 };
 </script>
