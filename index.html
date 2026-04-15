@@ -3,34 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>美股產業鏈全能分析儀 v2.6 (終極保全版)</title>
+<title>美股產業鏈共振分析儀 v2.7 (終極全邏輯版)</title>
 <style>
-/* 繼承所有專業樣式 */
+/* 恢復 v2.1 的精細樣式並結合新功能 */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; }
 #setup { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
 .setup-card { background: #fff; border-radius: 16px; border: 1px solid #e0e0d8; padding: 2.5rem; max-width: 520px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
 .badge-pro { display: inline-block; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 99px; font-size: 11px; padding: 2px 10px; margin-bottom: 1rem; font-weight: 600; }
-input[type="password"], textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; background: #fafafa; }
+input[type="password"], textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; background: #fafafa; font-size: 14px; }
 .btn-primary { width: 100%; padding: 12px; background: #f97316; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
-#app { display: none; max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+#app { display: none; max-width: 1500px; margin: 0 auto; padding: 1.5rem; }
 .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
 .pulse-box { background: #fff; border: 1px solid #fed7aa; border-left: 4px solid #f97316; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
 .pulse-box textarea { height: 60px; font-size: 12px; resize: none; margin-top: 10px; border-color: #fde68a; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; position: relative; }
-.card.hot { border-top: 4px solid #ef4444; background: #fffafb; }
-.card-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-.card-name { font-size: 14px; font-weight: 700; color: #111827; }
-.conf-badge { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; }
-.high { background: #dcfce7; color: #166534; }
-.low { background: #fee2e2; color: #991b1b; }
-.reason { font-size: 11.5px; color: #4b5563; line-height: 1.5; margin-bottom: 10px; }
-.stocks { display: flex; flex-wrap: wrap; gap: 5px; }
-.tag { font-size: 11px; padding: 3px 9px; border-radius: 6px; background: #f3f4f6; border: 1px solid #e5e7eb; color: #1f2937; text-decoration: none; font-family: monospace; }
-.ds-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; background: #f3f4ff; color: #6366f1; border: 1px solid #e0e7ff; margin-left: 5px; }
-.filter-bar { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; }
-.filter-btn { padding: 6px 15px; border: 1px solid #ddd; border-radius: 99px; background: #fff; font-size: 12px; cursor: pointer; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; transition: 0.2s; position: relative; }
+.card.hot { border-top: 5px solid #ef4444; background: #fffafb; }
+.card-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: flex-start; }
+.card-name { font-size: 15px; font-weight: 700; color: #111827; display: flex; align-items: center; gap: 5px; }
+.momentum-icon { font-size: 14px; font-weight: bold; }
+.conf-badge { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+.high { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.low { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+.reason { font-size: 11.5px; color: #4b5563; line-height: 1.6; margin-bottom: 12px; }
+.stocks { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; background: #f3f4f6; border: 1px solid #e5e7eb; color: #1f2937; text-decoration: none; font-family: monospace; font-weight: 600; }
+.tag:hover { background: #e5e7eb; border-color: #d1d5db; }
+.footer-meta { margin-top: 12px; padding-top: 8px; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
+.source-tag { font-size: 9px; color: #6366f1; background: #eef2ff; padding: 1px 6px; border-radius: 4px; }
+.filter-bar { margin-bottom: 20px; display: flex; gap: 12px; align-items: center; }
+.filter-btn { padding: 6px 18px; border: 1px solid #ddd; border-radius: 99px; background: #fff; font-size: 12px; cursor: pointer; transition: 0.2s; }
 .filter-btn.active { background: #f97316; color: #fff; border-color: #f97316; }
 .spin { display: inline-block; width: 16px; height: 16px; border: 2px solid #eee; border-top-color: #f97316; border-radius: 50%; animation: rot .8s linear infinite; }
 @keyframes rot { to{transform:rotate(360deg)} }
@@ -40,30 +43,29 @@ input[type="password"], textarea { width: 100%; padding: 12px; border: 1px solid
 
 <div id="setup">
   <div class="setup-card">
-    <span class="badge-pro">V2.6 終極保全版</span>
-    <h1>📊 產業鏈分析儀</h1>
-    <p style="font-size:13px; color:#6b7280; margin: 15px 0;">Yahoo 真實數據強抓 + 40格全市場地圖 + 噪音診斷</p>
+    <span class="badge-pro">V2.7 終極全邏輯版</span>
+    <h1>📊 產業鏈全能分析儀</h1>
+    <p style="font-size:13px; color:#6b7280; margin: 15px 0;">恢復成交量異動邏輯 + 供應鏈推演 + 40格地圖</p>
     <input type="password" id="keyInput" placeholder="Groq API Key (gsk_...)" />
-    <button class="btn-primary" id="startBtn">啟動完整邏輯掃描</button>
+    <button class="btn-primary" id="startBtn">啟動最強引擎</button>
   </div>
 </div>
 
 <div id="app">
   <div class="top-bar">
-    <h3>美股產業鏈共振分析儀 <span id="status" style="font-size:11px; color:#22c55e;"></span></h3>
-    <button class="btn-primary" id="refBtn" style="width:auto; padding: 6px 20px;">↻ 重新抓取並分析</button>
+    <h3>美股全市場共振掃描 <span id="status" style="font-size:11px; color:#22c55e;"></span></h3>
+    <button class="btn-primary" id="refBtn" style="width:auto; padding: 6px 20px;">↻ 重新分析</button>
   </div>
 
   <div class="pulse-box">
-    <h4>📡 市場消息注入 (例如：波音獲得大合約)</h4>
-    <textarea id="marketPulse" placeholder="輸入單點異動消息，AI 將連動供應鏈進行 40 格全掃描..."></textarea>
+    <h4>📡 熱點脈搏注入 (Yahoo 真實數據已自動鎖死)</h4>
+    <textarea id="marketPulse" placeholder="手動補充消息：例如某龍頭大漲、或特定板塊新聞..."></textarea>
   </div>
 
   <div class="filter-bar">
-    <span style="font-size:12px; color:#6b7280;">規模：</span>
     <button class="filter-btn active" data-n="10">Top 10</button>
     <button class="filter-btn" data-n="20">Top 20</button>
-    <button class="filter-btn" data-n="40">全部 40</button>
+    <button class="filter-btn" data-n="40">全部 40 板塊</button>
   </div>
 
   <div id="grid" class="grid"></div>
@@ -72,7 +74,9 @@ input[type="password"], textarea { width: 100%; padding: 12px; border: 1px solid
 <script>
 var apiKey = '', sectors = [], activeN = 10;
 
-// 【保全核心】強化後的抓取函式，避免 Yahoo 數據被吃掉
+// 【重型黑名單恢復】
+const BLACKLIST = ['NYSE','NASDAQ','SEC','ETF','IPO','CEO','CFO','USD','USA','THE','FOR','AND','ARE','NOT','BUT','FROM','WITH','THIS','THAT','WILL','INC','LLC','LTD','COM','NET','ORG','PRICE','VOLUME','CHG','MARKET'];
+
 async function fetchRealTickers() {
   const proxies = [
     u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
@@ -86,34 +90,33 @@ async function fetchRealTickers() {
   for(let url of targets) {
     for(let p of proxies) {
       try {
-        const r = await fetch(p(url), { signal: AbortSignal.timeout(5000) });
+        const r = await fetch(p(url), { signal: AbortSignal.timeout(6000) });
         const html = await r.text();
         const matches = html.match(/\b([A-Z]{2,5})\b/g) || [];
         if(matches.length > 5) { results = results.concat(matches); break; }
       } catch(e) {}
     }
   }
-  return [...new Set(results)].filter(t => !['NYSE','NASDAQ','SEC','ETF'].includes(t)).slice(0, 20);
+  // 嚴格過濾黑名單
+  return [...new Set(results)].filter(t => !BLACKLIST.includes(t)).slice(0, 25);
 }
 
 function buildPrompt(tickers, pulse) {
-  return `你是頂級分析師。
-真實數據(Yahoo)：${tickers.join(', ')}。
-用戶輸入：${pulse}。
+  return `你是頂級分析師。目前觀察到成交量與漲幅異動股：${tickers.join(', ')}。補充消息：${pulse}。
 
-【嚴格邏輯順序】
-1. 必須輸出 40 個板塊，按 Rank 1-40 排序。
-2. 邏輯 A (共振)：若 ${tickers.join(', ')} 中有 2 檔以上屬同產業(如量子電腦)，必須進 Rank 1-10。
-3. 邏輯 B (供應鏈)：若用戶提到龍頭股(如波音)，必須推演供應鏈。
-4. 邏輯 C (噪音)：診斷是「產業大勢」還是「單純公司內政」。
-5. JSON 中每個 sector 必須包含 "source": "Yahoo數據共振" 或 "AI推理連動"。
+【執行最高指令：邏輯全開】
+1. 必須回傳 40 個細分板塊，按 Rank 1-40 排序。
+2. 邏輯 A (成交量共振)：若 ${tickers.join(', ')} 有 2 檔以上屬同細分板塊，該板塊必須進 Rank 1-10。
+3. 邏輯 B (供應鏈連動)：若脈搏提到龍頭股，必須在其格位列出它及 3-4 個上下游供應商。
+4. 邏輯 C (噪音診斷)：判斷是「產業趨勢推進」還是「單純公司行政噪音」。
+5. 視覺輸出：每個 sector 必須包含 momentum ("rising", "stable", "fading")。
 
-回傳純 JSON: {"sectors":[{"rank":1,"name":"名稱","conf":"high/low","source":"來源","reason":"點評","stocks":["T1","T2","T3"]}]}`;
+回傳純 JSON: {"sectors":[{"rank":1,"name":"名稱","momentum":"rising","conf":"high/low","source":"Yahoo共振/供應鏈","reason":"點評","stocks":["T1","T2","T3"]}]}`;
 }
 
 async function run() {
   const grid = document.getElementById('grid');
-  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:100px;"><span class="spin"></span><br><br>正在強制抓取 Yahoo 真實數據並構建 40 格地圖...</div>';
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:100px;"><span class="spin"></span><br><br>正在執行全方位邏輯掃描...<br>正在恢復成交量異動判斷與 40 格掃描...</div>';
   
   try {
     const tickers = await fetchRealTickers();
@@ -123,7 +126,10 @@ async function run() {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'system', content: 'Wall Street Analyst. JSON only. 40 sectors required.' }, { role: 'user', content: buildPrompt(tickers, pulse) }],
+        messages: [
+          { role: 'system', content: 'Wall Street Expert. Return 40 sectors. No markdown. JSON only. Ensure stocks field always has 3-5 tickers.' },
+          { role: 'user', content: buildPrompt(tickers, pulse) }
+        ],
         response_format: { type: "json_object" },
         temperature: 0.2,
         max_tokens: 4500
@@ -132,26 +138,37 @@ async function run() {
     const data = await res.json();
     sectors = JSON.parse(data.choices[0].message.content).sectors;
     render();
-    document.getElementById('status').textContent = '● 數據已更新 (Yahoo 實時數據注入)';
+    document.getElementById('status').textContent = `● 已抓取 ${tickers.length} 檔異動股並完成 40 格掃描`;
   } catch (e) {
-    grid.innerHTML = '<div style="color:red; text-align:center; padding:50px;">抓取失敗。請檢查網絡或 API Key。</div>';
+    grid.innerHTML = '<div style="color:red; text-align:center; padding:50px;">分析失敗。</div>';
   }
 }
 
 function render() {
   const grid = document.getElementById('grid');
-  grid.innerHTML = sectors.slice(0, activeN).map(s => `
+  grid.innerHTML = sectors.slice(0, activeN).map(s => {
+    const mIcon = s.momentum === 'rising' ? '↑' : s.momentum === 'fading' ? '↓' : '→';
+    const mColor = s.momentum === 'rising' ? '#ef4444' : s.momentum === 'fading' ? '#3b82f6' : '#6b7280';
+    
+    return `
     <div class="card ${s.rank <= 5 ? 'hot' : ''}">
       <div class="card-header">
-        <span class="card-name">#${s.rank} ${s.name} <span class="ds-badge">${s.source}</span></span>
+        <span class="card-name">
+          <span style="color:${mColor}" class="momentum-icon">${mIcon}</span>
+          #${s.rank} ${s.name}
+        </span>
         <span class="conf-badge ${s.conf === 'high' ? 'high' : 'low'}">${s.conf === 'high' ? '🔥 產業趨勢' : '⚠️ 公司噪音'}</span>
       </div>
       <div class="reason">${s.reason}</div>
       <div class="stocks">
         ${s.stocks.map(t => `<a href="https://www.tradingview.com/symbols/${t}/" target="_blank" class="tag">${t}</a>`).join('')}
       </div>
+      <div class="footer-meta">
+        <span class="source-tag">${s.source}</span>
+        <span style="font-size:9px; color:#9ca3af;">Momentum: ${s.momentum}</span>
+      </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -165,7 +182,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
 document.getElementById('startBtn').onclick = () => {
   apiKey = document.getElementById('keyInput').value.trim();
-  localStorage.setItem('groq_v26_key', apiKey);
+  localStorage.setItem('groq_v27_key', apiKey);
   document.getElementById('setup').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   run();
@@ -173,7 +190,7 @@ document.getElementById('startBtn').onclick = () => {
 
 document.getElementById('refBtn').onclick = run;
 window.onload = () => {
-  const saved = localStorage.getItem('groq_v26_key');
+  const saved = localStorage.getItem('groq_v27_key');
   if(saved) {
     apiKey = saved;
     document.getElementById('setup').style.display = 'none';
